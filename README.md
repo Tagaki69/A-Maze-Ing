@@ -1,111 +1,66 @@
-*This project has been created as part of the 42 curriculum by elarue, wakhazza.*
+# A-Maze-ing 🧩
 
-# A-Maze-ing
+## 🎯 Description
+Générateur et solveur de labyrinthes procéduraux en Python. Le projet génère des labyrinthes parfaits (ou imparfaits) basés sur une configuration stricte, incluant un motif "42" obligatoire au centre et un export au format hexadécimal.
 
-## 📖 Description
-**A-Maze-ing** is a Python-based procedural maze generator and solver. The project builds a perfect (or imperfect) maze from a given configuration file, ensures a guaranteed path from the entrance to the exit, and embeds a mandatory "42" shape made of walls in the center. 
+## 🚀 Fonctionnalités
+- **Génération Procédurale** : Algorithme DFS itératif pour des couloirs sinueux et complexes.
+- **Shortest Path** : Résolution via BFS garantissant le chemin le plus court.
+- **Validation Robuste** : Parsing de configuration via `Pydantic` pour un contrôle strict des entrées.
+- **Interface UI** : Menu interactif en ASCII avec support de thèmes (Ghost, Cyberpunk, Hell, etc.).
+- **Export Hex** : Sortie conforme au format 42 (murs codés sur 4 bits).
 
-It features an interactive ASCII terminal interface allowing users to regenerate the maze, view the shortest path solution in real-time, toggle themes, and export the maze data into a hexadecimal format.
-
----
-
-## 🚀 Instructions
-
-### Prerequisites
-- Python 3.10 or higher.
-- `pip` or `venv` for dependency management.
-
-### Installation & Execution
-A `Makefile` is provided to simplify the workflow:
-
-1. **Install dependencies** (Pydantic, Build, etc.):
-   ```bash
-   make install
-   ```
-2. **Run the program**:
-   ```bash
-   make run
-   # Or manually: python3 a_maze_ing.py config.txt
-   ```
-3. **Linting & Type Checking** (Flake8 & Mypy):
-   ```bash
-   make lint
-   ```
-4. **Clean cache and build files**:
-   ```bash
-   make clean
-   ```
-
----
-
-## ⚙️ Configuration File Format (`config.txt`)
-
-The generator relies on a `.txt` configuration file. It uses a `KEY=VALUE` format. Lines starting with `#` are ignored.
-
-**Mandatory Keys:**
-- `WIDTH`: Width of the maze (in logical cells).
-- `HEIGHT`: Height of the maze (in logical cells).
-- `ENTRY`: Coordinates of the start point `x,y`.
-- `EXIT`: Coordinates of the end point `x,y`.
-- `OUTPUT_FILE`: Name of the text file where the hex output will be saved.
-- `PERFECT`: Boolean (`True` or `False`). If `True`, the maze has exactly one path between any two cells. If `False`, random walls are broken to create loops.
-
-**Optional Keys:**
-- `SEED`: Integer used to reproduce the same maze generation. If omitted, a random seed is generated automatically.
-
-**Example:**
+## 📁 Structure
 ```text
-WIDTH=15
-HEIGHT=15
-ENTRY=0,0
-EXIT=14,14
-OUTPUT_FILE=maze.txt
-PERFECT=True
-SEED=42
+A-Maze-ing/
+├── a_maze_ing.py        # Point d'entrée & Interface Menu
+├── mazegen/
+│   └── mazegen.py       # Coeur algorithmique (DFS/BFS/Logic)
+├── config_parser.py     # Modèles Pydantic & Parsing
+├── config.txt           # Configuration du labyrinthe
+└── Makefile             # Automatisation (install, run, lint)
+
 ```
 
+## 📝 Aperçu des Composants
+
+### 🧠 Logique & Algorithmes (`mazegen.py`)
+
+* **`generate()`** : Implémentation d'un **DFS Itératif** (Recursive Backtracker) avec pile pour éviter les `RecursionError` sur les grandes grilles.
+* **`solve()`** : Algorithme **BFS** (Breadth-First Search) pour trouver le chemin optimal vers la sortie.
+* **`setup_42_pattern()`** : Intégration mathématique du motif "42" statique au sein d'une grille dynamique.
+
+### 🛠️ Validation & Données (`config_parser.py`)
+
+* **`MazeConfig`** : Modèle de données utilisant des `field_validator` pour garantir des dimensions valides (5 à 100) et des coordonnées cohérentes.
+* **`validate_maze_configs`** : Vérifie l'absence de chevauchement entre l'entrée/sortie et le motif central "42".
+
+### 🎮 Interface & Système (`a_maze_ing.py`)
+
+* **`MenuState`** : Gestionnaire d'état pour les thèmes, les animations et la régénération à la volée.
+* **`get_single_key()`** : Capture de touches en temps réel via `termios` et `tty` sans bloquer le terminal.
+
+## 🤝 Équipe & Rôles
+
+* **`elarue`** : Logique algorithmique pure (DFS, BFS) et intégration du pattern "42".
+* **`wakhazza`** : Architecture système, validation Pydantic, UI interactive et logique d'export Hex.
+
+## 🏆 Note obtenue
+
+**120/100** (bonus inclus) ✨
+
+## 🛠️ Contraintes 42
+
+✅ Validation Pydantic ✅ Typage statique (Mypy) ✅ Linting Flake8 ✅ Makefile complet
+
+## 📚 Concepts clés
+
+**DFS itératif** • **BFS** • **Data Validation** • **Architecture Modulaire** • **Terminal UI**
+
 ---
 
-## 🧠 Algorithms & Technical Choices
+## ⚠️ Disclaimer 42
 
-### Maze Generation: Iterative DFS (Depth-First Search / Recursive Backtracker)
-We chose an iterative **DFS** using a stack (`list` in Python) to generate the maze. 
-- **Why?** The Recursive Backtracker is famous for creating long, winding corridors, which makes mazes visually appealing and fun to solve. We opted for the *iterative* version (with a stack) rather than the recursive one to prevent `RecursionError` on very large mazes, ensuring high stability.
+Ce dépôt est rendu public pour présenter mon code et servir de ressource pédagogique ; le plagiat est strictement interdit et vous devez être capable d'expliquer votre propre travail.
 
-### Maze Solving: BFS (Breadth-First Search)
-To find the solution path, we implemented a **BFS**.
-- **Why?** Unlike DFS, which might find *a* path, BFS guarantees finding the **shortest possible path** from the entry to the exit. It propagates like a wave, which is perfect for generating the final step-by-step directions (`N`, `S`, `E`, `W`) required in the hex export.
-
----
-
-## 🤝 Team & Project Management
-
-### Roles
-- **`elarue`**: Core Algorithmic Logic. Handled the DFS generation algorithm, the BFS solving algorithm, and the complex mathematical integration of the static "42" pattern within the dynamic grid.
-- **`wakhazza`**: Architecture, Data, and UI. Managed the file parsing with `Pydantic` (error handling & data validation), the interactive terminal Menu (themes, colors, keyboard inputs), the `Makefile`, and the complex Hexadecimal data export logic.
-
-### Planning & Evolution
-We started by defining the data structures (lists of dictionaries to track the 4 cardinal walls of each cell). `elarue` focused on the backend generation while `wakhazza` built the frontend loop and the parser. We then merged our logic to connect the ASCII rendering to the logical grid.
-- **What worked well**: Separating the "logical grid" from the "visual ASCII grid" allowed us to work in parallel without merge conflicts.
-- **What could be improved**: One of the main challenges was creating smooth terminal animations without display glitches or flickering. Another difficulty was implementing the maze carving algorithm correctly, especially making sure that walls were removed consistently between neighbouring cells.
-
-### Tools Used
-- **Language**: Python 3.12
-- **Libraries**: `pydantic` (for robust config validation), `sys`, `termios`, `tty` (for real-time keypress capture without pressing Enter).
-- **Quality/Linting**: `flake8`, `mypy`.
-- **Version Control**: Git & GitHub.
-
----
-
-## 📚 Resources & AI Usage
-
-### Resources
-- Wikipedia: [Maze generation algorithms](https://en.wikipedia.org/wiki/Maze_generation_algorithm)
-- Wikipedia: [Breadth-first search](https://en.wikipedia.org/wiki/Breadth-first_search)
-
-### AI Usage Statement
-During this project, Artificial Intelligence (LLM) was used strictly as an educational tutor and debugging assistant:
-- **Task:** Understanding the BFS algorithm concepts.
-- **Task:** Exploring how to capture single keystrokes in Python without requiring the user to press `Enter` (using `termios` and `tty`).
-- **Task:** Reviewing code structure to ensure compliance and generating this README template based on our project details.
-No full code files were blindly generated or copy-pasted; all algorithms were implemented and adapted manually to fit our specific grid structure.
+*Projet réalisé dans le cadre du cursus 42* 🎓
